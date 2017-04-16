@@ -6,6 +6,14 @@ const Discordie = require('discordie')
 const bot = new Discordie()
 const EventEmitter = require('events')
 const Dispatch = new EventEmitter()
+const ReqDir = require('require-directory')
+
+let modules = ReqDir(module, './modules')
+
+for (var mod in modules) {
+  if (typeof modules[mod].init !== 'function') console.warn('Cannot load a module due to the init function being invalid.')
+  else modules[mod].init(Dispatch)
+}
 
 let count = 0
 let WS = new Websocket(Config.bezerkURI)
@@ -13,6 +21,7 @@ let WS = new Websocket(Config.bezerkURI)
 bot.connect({
   token: Config.token
 })
+
 
 bot.Dispatcher.on('GATEWAY_READY', () => {
   console.log('Rush is ready!')
