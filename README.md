@@ -6,6 +6,8 @@
 </p>
 
 ---
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/TheSharks/Rush.svg)](https://greenkeeper.io/)
 Rush is a method of communicating with a [Bezerk](https://github.com/TheSharks/Bezerk) server via Discord
 
 # Rush is still WIP, use at your own risk
