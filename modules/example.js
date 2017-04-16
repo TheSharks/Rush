@@ -4,6 +4,6 @@ exports.init = function (Dispatch) { // This will be called when the module firs
   Dispatch.on('MESSAGE_CREATE', (data) => externalFunction(data.c))
 }
 
-function externalFunction(c) {
+function externalFunction (c) {
   console.log(c.message.content)
 }

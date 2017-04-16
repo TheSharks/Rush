@@ -22,7 +22,6 @@ bot.connect({
   token: Config.token
 })
 
-
 bot.Dispatcher.on('GATEWAY_READY', () => {
   console.log('Rush is ready!')
   send('IDENTIFY_LISTENER', ['*']) // we want fucking EVERYTHING
@@ -38,13 +37,13 @@ bot.Dispatcher.on('MESSAGE_CREATE', c => {
       let counter = 0
       send('EVAL', question.toString())
       console.log(question)
-      Dispatch.on('EVAL_REPLY', function doShit(data) {
+      Dispatch.on('EVAL_REPLY', function doShit (data) {
         counter++
         response.push(`\`${data.shard}\`: \`${data.c}\``)
-        if (counter === count){
+        if (counter === count) {
           c.message.channel.sendMessage(response.join('\n'))
           Dispatch.removeListener('EVAL_REPLY', doShit)
-        } 
+        }
       })
     }
   }
@@ -55,7 +54,7 @@ WS.on('message', (c) => {
   receive(data)
 })
 
-function send(opCode, data, shard) {
+function send (opCode, data, shard) {
   if (!shard) {
     WS.send(JSON.stringify({
       op: opCode,
@@ -70,7 +69,7 @@ function send(opCode, data, shard) {
   }
 }
 
-function receive(data) {
+function receive (data) {
   switch (data.op) {
     case 'HELLO': {
       console.log('Hello from Bezerk!')
