@@ -10,13 +10,19 @@ const ReqDir = require('require-directory')
 
 let modules = ReqDir(module, './modules')
 
-for (var mod in modules) {
-  if (typeof modules[mod].init !== 'function') console.warn('Cannot load a module due to the init function being invalid.')
-  else modules[mod].init(Dispatch)
+let WS
+let count = 0
+
+function init() {
+  WS = new Websocket(Config.bezerkURI)
 }
 
-let count = 0
-let WS = new Websocket(Config.bezerkURI)
+init()
+
+for (var mod in modules) {
+  if (typeof modules[mod].init !== 'function') console.warn('Cannot load a module due to the init function being invalid.')
+  else modules[mod].init(Dispatch, bot.Dispatcher, WS)
+}
 
 bot.connect({
   token: Config.token
@@ -54,6 +60,12 @@ WS.on('message', (c) => {
   receive(data)
 })
 
+WS.on('close', () => {
+  count = 0
+  console.log('Lost connection, attempting to reconnect...')
+  init()
+})
+
 function send (opCode, data, shard) {
   if (!shard) {
     WS.send(JSON.stringify({
@@ -89,16 +101,19 @@ function receive (data) {
       count++
       console.log(`Shard ${data.c} just connected to Bezerk`)
       Dispatch.emit(data.op, data)
+      Dispatch.emit('ANY', data)
       break
     }
     case 'SHARD_LEFT' : {
       count--
       console.log(`Shard ${data.c} dropped from Bezerk`)
       Dispatch.emit(data.op, data)
+      Dispatch.emit('ANY', data)
       break
     }
     default: {
       Dispatch.emit(data.op, data)
+      Dispatch.emit('ANY', data)
     }
   }
 }

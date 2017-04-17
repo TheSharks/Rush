@@ -1,9 +1,16 @@
 // This is an example on how RushMods work.
+let WS
 
-exports.init = function (Dispatch) { // This will be called when the module first initializes, this provides the Dispatcher for events.
-  Dispatch.on('MESSAGE_CREATE', (data) => externalFunction(data.c))
+exports.init = function (Dispatch, BotDispatch, BezerkWS) { // This will be called when the module first initializes, this provides the Dispatcher for events.
+  Dispatch.on('ANY', (data) => externalFunction(data))
+  BotDispatch.on('MESSAGE_CREATE', (c) => console.log(c.message.content))
+  WS = BezerkWS
 }
 
-function externalFunction (c) {
-  console.log(c.message.content)
+function externalFunction (bezerkEventData) {
+  console.log(bezerkEventData.op, bezerkEventData.c)
+}
+
+function askBezerk (data) {
+  WS.send(JSON.stringify(data)) // Websockets work with strings, NOT with objects, be sure to stringify your objects before sending
 }
