@@ -11,6 +11,6 @@ function externalFunction (bezerkEventData) {
   console.log(bezerkEventData.op, bezerkEventData.c)
 }
 
-function askBezerk (data) {
+function askBezerk (data) { // eslint-disable-line no-unused-vars
   WS.send(JSON.stringify(data)) // Websockets work with strings, NOT with objects, be sure to stringify your objects before sending
 }

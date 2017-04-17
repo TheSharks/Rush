@@ -13,7 +13,7 @@ let modules = ReqDir(module, './modules')
 let WS
 let count = 0
 
-function init() {
+function init () {
   WS = new Websocket(Config.bezerkURI)
 }
 
