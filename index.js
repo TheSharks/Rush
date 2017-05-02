@@ -11,7 +11,6 @@ const ReqDir = require('require-directory')
 let modules = ReqDir(module, './modules')
 
 let WS
-let count = 0
 
 function init () {
   WS = new Websocket(Config.bezerkURI)
@@ -21,7 +20,7 @@ init()
 
 for (var mod in modules) {
   if (typeof modules[mod].init !== 'function') console.warn('Cannot load a module due to the init function being invalid.')
-  else modules[mod].init(Dispatch, bot.Dispatcher, WS)
+  else modules[mod].init(Dispatch, bot.Dispatcher)
 }
 
 bot.connect({
@@ -33,26 +32,8 @@ bot.Dispatcher.on('GATEWAY_READY', () => {
   send('IDENTIFY_LISTENER', ['*']) // we want fucking EVERYTHING
 })
 
-bot.Dispatcher.on('MESSAGE_CREATE', c => {
-  if (c.message.author.id === '107904023901777920') {
-    if (c.message.content.indexOf('gc:ask') === 0) {
-      let question = c.message.content.split(' ')
-      question.shift()
-      question.join(' ')
-      let response = []
-      let counter = 0
-      send('EVAL', question.toString())
-      console.log(question)
-      Dispatch.on('EVAL_REPLY', function doShit (data) {
-        counter++
-        response.push(`\`${data.shard}\`: \`${data.c}\``)
-        if (counter === count) {
-          c.message.channel.sendMessage(response.join('\n'))
-          Dispatch.removeListener('EVAL_REPLY', doShit)
-        }
-      })
-    }
-  }
+Dispatch.on('QUESTION', (k) => {
+  k.shard !== undefined ? send(k.op, k.c, k.shard) : send(k.op, k.c) 
 })
 
 WS.on('message', (c) => {
@@ -61,7 +42,6 @@ WS.on('message', (c) => {
 })
 
 WS.on('close', () => {
-  count = 0
   console.log('Lost connection, attempting to reconnect...')
   init()
 })
@@ -89,23 +69,20 @@ function receive (data) {
     }
     case 'OK': {
       console.log('Bezerk connection established!')
-      send('EVAL', 'Bezerk.send(JSON.stringify({op: "SHARD_ID", c: argv.shardid}))') // Ask all shards to return their ShardID
+      send('COUNT', '')
       break
     }
-    case 'SHARD_ID' : {
-      count++
-      console.log(`Got a response from shard ${data.c}, verified connected to ${count} shards so far.`)
+    case 'COUNT' : {
+      console.log(`Bezerk is connected to ${data.c.shards} shards, and ${data.c.listeners} listeners.`)
       break
     }
     case 'SHARD_JOINED' : {
-      count++
       console.log(`Shard ${data.c} just connected to Bezerk`)
       Dispatch.emit(data.op, data)
       Dispatch.emit('ANY', data)
       break
     }
     case 'SHARD_LEFT' : {
-      count--
       console.log(`Shard ${data.c} dropped from Bezerk`)
       Dispatch.emit(data.op, data)
       Dispatch.emit('ANY', data)
