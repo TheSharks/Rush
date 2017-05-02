@@ -33,7 +33,7 @@ bot.Dispatcher.on('GATEWAY_READY', () => {
 })
 
 Dispatch.on('QUESTION', (k) => {
-  k.shard !== undefined ? send(k.op, k.c, k.shard) : send(k.op, k.c) 
+  k.shard !== undefined ? send(k.op, k.c, k.shard) : send(k.op, k.c)
 })
 
 WS.on('message', (c) => {
