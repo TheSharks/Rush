@@ -72,8 +72,9 @@ function receive (data) {
       send('COUNT', '')
       break
     }
-    case 'COUNT' : {
+    case 'COUNT_REPLY' : {
       console.log(`Bezerk is connected to ${data.c.shards} shards, and ${data.c.listeners} listeners.`)
+      Dispatch.emit(data.op, data)
       break
     }
     case 'SHARD_JOINED' : {
