@@ -3,7 +3,9 @@ process.title = 'Rush'
 const Config = require('./config.json')
 const Websocket = require('ws')
 const Discordie = require('discordie')
-const bot = new Discordie()
+const bot = new Discordie({
+  autoReconnect: true
+})
 const EventEmitter = require('events')
 const Dispatch = new EventEmitter()
 const ReqDir = require('require-directory')
