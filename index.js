@@ -29,6 +29,11 @@ bot.connect({
   token: Config.token
 })
 
+bot.Dispatcher.on('DISCONNECTED', () => {
+  if (WS !== undefined) WS.close()
+  WS = undefined
+})
+
 bot.Dispatcher.on('GATEWAY_READY', () => {
   console.log('Rush is ready!')
   send('IDENTIFY_LISTENER', ['*']) // we want fucking EVERYTHING
